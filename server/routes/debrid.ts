@@ -1,5 +1,4 @@
 import type { HonoBinding } from "@/types";
-import { verifyAuth } from "@hono/auth-js";
 import { Hono } from "hono";
 
 const router = new Hono<HonoBinding>({ strict: false });
@@ -48,9 +47,8 @@ router.get("/oauth/*", async (c) => {
   return fetchApiResponse(url.toString(), { method: c.req.method });
 });
 
-router.use("*", verifyAuth(), async (c) => {
+router.use("*", async (c) => {
   const url = new URL(c.req.url);
-  const user = c.get("authUser")?.token;
   url.host = apiHost;
   url.protocol = apiProtocol;
   url.port = "";
@@ -59,7 +57,7 @@ router.use("*", verifyAuth(), async (c) => {
   const headers = new Headers();
   headers.set(
     "Authorization",
-    `Bearer ${c.env.DEBRID_TOKEN || user?.access_token}`
+    `Bearer ${c.env.DEBRID_TOKEN}`
   );
 
   if (

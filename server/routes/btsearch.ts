@@ -11,7 +11,6 @@ import {
 } from "valibot";
 import axios, { isAxiosError } from "feaxios";
 import { XMLParser } from "fast-xml-parser";
-import { verifyAuth } from "@hono/auth-js";
 
 type RssFeedResponse = {
   rss: {
@@ -91,7 +90,7 @@ function extractTotalPages(input: string) {
 
 const router = new Hono<HonoBinding>({ strict: false });
 
-router.get("/", verifyAuth(), async (c) => {
+router.get("/", async (c) => {
   const result = safeParse(QuerySchema, c.req.query());
   if (!result.success) {
     return new Response(

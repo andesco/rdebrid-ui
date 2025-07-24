@@ -1,22 +1,32 @@
-import { getAuthConfig } from "../utils/auth-config";
-import { initAuthConfig } from "@hono/auth-js";
 import { Hono } from "hono";
+import { optionalBasicAuth } from "../middleware/basic-auth";
 
-import AuthRouter from "./auth";
 import DebridRouter from "./debrid";
 import BTDigRouter from "./btsearch";
 
 const router = new Hono({ strict: false });
 
-router.use("*", initAuthConfig(getAuthConfig));
+// Apply optional basic auth to protected routes
+router.use("/debrid/*", async (c, next) => {
+  const authResult = await optionalBasicAuth(c.req.raw, c.env);
+  if (authResult) return authResult;
+  await next();
+});
 
-router.route("/auth", AuthRouter);
+router.use("/btsearch", async (c, next) => {
+  const authResult = await optionalBasicAuth(c.req.raw, c.env);
+  if (authResult) return authResult;
+  await next();
+});
 
 router.route("/debrid", DebridRouter);
 
 router.route("/btsearch", BTDigRouter);
 
-router.get("/cors", async (c) => {
+router.get("/cors", async (c, next) => {
+  const authResult = await optionalBasicAuth(c.req.raw, c.env);
+  if (authResult) return authResult;
+  
   const link = c.req.query("link");
   if (!link) {
     return c.text("No link provided", 400);

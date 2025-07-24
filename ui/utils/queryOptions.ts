@@ -6,7 +6,6 @@ import type {
   TorrentAvaliabilityResponse,
 } from "@/types";
 import http from "@/ui/utils/http";
-import type { Session } from "@auth/core/types";
 import {
   keepPreviousData,
   queryOptions,
@@ -15,15 +14,6 @@ import {
 } from "@tanstack/react-query";
 import type { BtDigParams, DebridParams } from "./schema";
 import pLimit from "p-limit";
-
-export const sessionQueryOptions = queryOptions({
-  queryKey: ["session"],
-  queryFn: async () => {
-    const res = await http.get<Session>("/auth/session");
-    return res.data;
-  },
-  refetchInterval: 5 * 60 * 1000,
-});
 
 export const btSearchItemsQueryOptions = (params: BtDigParams) =>
   queryOptions({

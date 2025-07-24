@@ -1,33 +1,13 @@
 import { Navbar } from "@/ui/components/navbar";
-import { sessionQueryOptions } from "@/ui/utils/queryOptions";
-import type { QueryClient } from "@tanstack/react-query";
-import { createFileRoute, Outlet, type ParsedLocation, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { useSelectModalStore } from "@/ui/utils/store";
 import { FileSelectModal } from "@/ui/components/list/debrid";
 import clsx from "clsx";
 import { SideNav } from "@/ui/components/side-nav";
 import { scrollClasses } from "@/ui/utils/classes";
 
-const checkAuth = async (queryClient: QueryClient, location: ParsedLocation, preload: boolean) => {
-  if (preload) {
-    return;
-  }
-  const session = await queryClient.ensureQueryData(sessionQueryOptions);
-  if (!session) {
-    redirect({
-      to: "/login",
-      search: {
-        redirect: location.href,
-      },
-      throw: true,
-    });
-  }
-};
-
 export const Route = createFileRoute("/_authed")({
   component: AuthenticatedLayout,
-  beforeLoad: ({ location, context: { queryClient }, preload }) =>
-    checkAuth(queryClient, location, preload),
 });
 function AuthenticatedLayout() {
   const open = useSelectModalStore((state) => state.open);
