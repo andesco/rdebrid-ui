@@ -148,3 +148,15 @@ export type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 export type SetValue<T> = Dispatch<SetStateAction<T>>;
 
 export type Nullish<T> = T | null | undefined;
+
+export interface DebridUser {
+  id: number;
+  username: string;
+  email: string;
+  points: number;
+  locale: string;
+  avatar: string;
+  type: "free" | "premium";
+  premium: number;
+  expiration: string;
+}

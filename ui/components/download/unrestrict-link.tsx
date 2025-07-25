@@ -7,7 +7,6 @@ import { useSearch } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import type { DebridUnlock } from "@/types";
-import { buttonClasses } from "@/ui/utils/classes";
 import { isAxiosError } from "feaxios";
 import { defaultUnlockLinkAvatar } from "@/ui/utils/common";
 
@@ -71,46 +70,30 @@ export const UnRestrictLink = () => {
   }, []);
 
   return (
-    <form className="size-full flex gap-6 flex-col" onSubmit={handleSubmit(onSubmit)}>
-      <Controller
-        name="links"
-        rules={{ required: "Enter host links" }}
-        control={control}
-        render={({ field, fieldState: { error } }) => (
-          <Textarea
-            aria-label="Enter your host links"
-            {...field}
-            isInvalid={!!error}
-            errorMessage={error?.message}
-            variant="bordered"
-            minRows={8}
-            placeholder="Enter your host links here..."
-          />
-        )}
+    <form className="flex gap-4 flex-col" onSubmit={handleSubmit(onSubmit)}>
+      <Textarea
+        label="Host Links"
+        classNames={{
+          input: "focus:outline-none focus:ring-0"
+        }}
       />
-      <Controller
-        name="password"
-        control={control}
-        render={({ field, fieldState: { error } }) => (
-          <Input
-            aria-label="Password"
-            variant="bordered"
-            labelPlacement="outside"
-            className="w-1/3 min-w-40"
-            autoComplete="off"
-            {...field}
-            isInvalid={!!error}
-            errorMessage={error?.message}
-            placeholder="Enter Password"
-          />
-        )}
+      <Input
+        label="Password"
+        description="optional password"
+        classNames={{
+          input: "focus:outline-none focus:ring-0"
+        }}
       />
 
-      <div className="flex items-center">
-        <Button type="submit" isLoading={status === "running"} className={buttonClasses}>
-          Unrestrict
-        </Button>
-      </div>
+      <Button 
+        type="submit" 
+        isLoading={status === "running"} 
+        color="primary"
+        variant="solid"
+        className="w-fit"
+      >
+        Unrestrict Links
+      </Button>
     </form>
   );
 };

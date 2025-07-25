@@ -1,11 +1,9 @@
 import type { DebridUnlock, DownloadTab } from "@/types";
-import { Avatar, Button, Tab, Tabs, Tooltip } from "@heroui/react";
+import { Avatar, Button, Tab, Tabs, Tooltip, Card, CardBody, CardHeader } from "@heroui/react";
 import { getRouteApi, Outlet } from "@tanstack/react-router";
-import clsx from "clsx";
 import { useDebridStore } from "@/ui/utils/store";
 import { Icons } from "@/ui/utils/icons";
 import { memo, useMemo } from "react";
-import { scrollClasses } from "@/ui/utils/classes";
 import { CopyButton } from "@/ui/components/copy-button";
 
 const titleMap = {
@@ -30,63 +28,49 @@ interface DownloadListItemProps {
 
 export const UnlockListItem = memo(({ item }: DownloadListItemProps) => {
   return (
-    <div className="hover:bg-white/5 transition grid gap-x-4 gap-y-2 cursor-pointer grid-cols-6 rounded-3xl py-2 px-3">
-      <div className="flex gap-3 w-full col-span-6 sm:col-span-4 items-center">
-        <div className="size-10 p-2">
-          <Avatar
-            title={item.host}
-            className="flex-shrink-0 w-6 h-6 p-1"
-            src={item.host_icon}
-          />
+    <Card className="w-full">
+      <CardBody className="flex flex-row items-center gap-3 p-3">
+        <Avatar
+          title={item.host}
+          src={item.host_icon}
+          size="sm"
+        />
+        <div className="flex-1">
+          <p className="font-medium text-sm truncate">
+            {item.error ? item.link : item.filename}
+          </p>
         </div>
-
-        <p
-          title={item.error ? "" : item.filename}
-          className={clsx(
-            "text-bold text-md truncate",
-            !item.error && "capitalize"
-          )}
-        >
-          {item.error ? item.link : item.filename}
-        </p>
-      </div>
-
-      <div className="flex items-center sm:ml-auto col-span-3 sm:col-span-2">
-        <div className="size-10 flex items-center justify-center">
+        <div className="flex items-center gap-2">
           {item.error ? (
             <Tooltip
-              offset={-6}
               content={item.error.replaceAll("_", " ")}
               color="danger"
-              className="capitalize"
-              closeDelay={200}
             >
               <Button
-                disableAnimation
                 isIconOnly
-                className="capitalize bg-transparent data-[hover=true]:bg-transparent"
+                variant="light"
+                color="danger"
               >
-                <Icons.Exclamation className="text-danger" />
+                <Icons.Exclamation />
               </Button>
             </Tooltip>
           ) : (
             <Icons.CheckCircle className="text-success" />
           )}
+          <Button
+            variant="solid"
+            color="primary"
+            as="a"
+            isIconOnly
+            isDisabled={!!item.error || item.streamable === 0}
+            href={item.download}
+            rel="noopener noreferrer"
+          >
+            <Icons.DownloadDashed />
+          </Button>
         </div>
-        <Button
-          variant="light"
-          as={"a"}
-          title={"Download"}
-          isIconOnly
-          isDisabled={!!item.error || item.streamable === 0}
-          rel="noopener noreferrer"
-          href={item.download}
-          className="data-[hover=true]:bg-transparent"
-        >
-          <Icons.DownloadDashed />
-        </Button>
-      </div>
-    </div>
+      </CardBody>
+    </Card>
   );
 });
 
@@ -107,61 +91,50 @@ export const DownloadPage = () => {
   );
 
   return (
-    <div className="p-4 flex flex-col gap-4">
-      <div className="w-full flex flex-col gap-3 max-w-2xl mx-auto p-3 rounded-lg ring-2 ring-white/10 bg-radial-1 bg-background">
-        <p className="text-xl capitalize">{titleMap[tabId]}</p>
-        <div className="space-y-4">
+    <div className="flex flex-col gap-4 max-w-2xl mx-auto">
+      <Card>
+        <CardHeader>
+          <h1 className="text-xl font-bold">{titleMap[tabId]}</h1>
+        </CardHeader>
+        <CardBody>
           <Tabs
-            aria-label="tabs"
             color="primary"
-            variant="bordered"
-            radius="full"
             selectedKey={tabId}
             onSelectionChange={(key) =>
               navigate({ params: { tabId: key as DownloadTab } })
             }
           >
-            {Object.keys(titleMap).map((tab) => (
+            {["torrents", "links"].map((tab) => (
               <Tab
                 key={tab}
                 title={
-                  <div className="flex items-center space-x-2 capitalize">
+                  <div className="flex items-center space-x-2">
                     {getIcon(tab as DownloadTab)}
-                    <span>{tab as DownloadTab}</span>
+                    <span className="capitalize">{tab as DownloadTab}</span>
                   </div>
                 }
               >
-                <Outlet />
+                <div className="mt-4">
+                  <Outlet />
+                </div>
               </Tab>
             ))}
           </Tabs>
-        </div>
-      </div>
+        </CardBody>
+      </Card>
+      
       {files.length > 0 && (
-        <div
-          className={clsx(
-            "w-full flex flex-col gap-3 max-w-2xl mx-auto p-3",
-            "rounded-lg ring-2 ring-white/10 bg-radial-1 bg-background",
-            "max-h-96 gap-4"
-          )}
-        >
-          <div className="flex justify-between pt-2">
-            <p className="text-lg capitalize">Links</p>
+        <Card>
+          <CardHeader className="flex justify-between">
+            <h2 className="text-lg font-semibold">Download Links</h2>
             <CopyButton value={copyContent} title="Copy Links" />
-          </div>
-
-          <div
-            data-scroll-restoration-id="scroll"
-            className={clsx(
-              "flex flex-col gap-4 px-2 py-3 overflow-y-auto",
-              scrollClasses
-            )}
-          >
+          </CardHeader>
+          <CardBody className="flex flex-col gap-3 max-h-96 overflow-y-auto">
             {files.map((item) => (
               <UnlockListItem key={item.id} item={item} />
             ))}
-          </div>
-        </div>
+          </CardBody>
+        </Card>
       )}
     </div>
   );

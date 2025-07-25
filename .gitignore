@@ -38,4 +38,4 @@ yarn-error.log*
 .dev.vars
 dist/**/*
 dev-dist/**/*
-tsconfig.tsbuildinfo
+tsconfig.tsbuildinfoUI.MD

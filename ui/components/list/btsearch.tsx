@@ -16,7 +16,6 @@ import {
   debridTorrentQueryOptions,
 } from "@/ui/utils/queryOptions";
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
-import { paginationItemClass, scrollClasses } from "@/ui/utils/classes";
 import { Icons } from "@/ui/utils/icons";
 import { copyDataToClipboard, formattedLongDate, navigateToExternalUrl } from "@/ui/utils/common";
 import clsx from "clsx";
@@ -176,37 +175,20 @@ export function BtSearchList() {
       <div className="flex">
         {data.torrents.length > 0 && (
           <Pagination
-            isCompact
             showControls
-            showShadow
-            color="primary"
             page={data.meta.page}
             total={data.meta.pages}
             onChange={handlePageChange}
-            classNames={{
-              item: paginationItemClass,
-              prev: paginationItemClass,
-              next: paginationItemClass,
-            }}
           />
         )}
       </div>
-      {!search.q && (
-        <p
-          className={clsx(
-            "text-center text-lg text-zinc-400",
-            "absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2",
-          )}
-        >
-          Search BTDig Index
-        </p>
-      )}
+      {!search.q && null}
       {!!search.q && (
         <>
           <ControlDropdown />
           <Listbox
             classNames={{
-              base: ["overflow-auto", scrollClasses],
+              base: "overflow-auto",
               list: "gap-4 px-2",
             }}
             items={data.torrents}

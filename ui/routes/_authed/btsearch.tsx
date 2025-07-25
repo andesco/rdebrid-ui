@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState, useEffect } from "react";
 import {
   Button,
   Dropdown,
@@ -15,6 +15,7 @@ import { btSearchItemsQueryOptions } from "@/ui/utils/queryOptions";
 import { valibotSearchValidator } from "@tanstack/router-valibot-adapter";
 import { btdigParamsSchema } from "@/ui/utils/schema";
 import { useIsFetching } from "@tanstack/react-query";
+import { RealDebridAccountInfo } from "@/ui/components/real-debrid-account-info";
 
 export const Route = createFileRoute("/_authed/btsearch")({
   component: Component,
@@ -42,6 +43,13 @@ const SearchInput = () => {
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
+  useEffect(() => {
+    // Focus the search input when the page loads
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
   const onSubmit = useCallback(
     (e: React.BaseSyntheticEvent) => {
       e.preventDefault();
@@ -58,30 +66,14 @@ const SearchInput = () => {
     <form onSubmit={onSubmit} className="w-full">
       <Input
         ref={inputRef}
-        aria-label="Search"
-        classNames={{
-          inputWrapper: [
-            "bg-white/5 group-data-[hover=true]:bg-white/10 group-data-[focus=true]:bg-white/5",
-            "rounded-full",
-          ],
-          input: "text-sm",
-        }}
-        defaultValue={search}
-        labelPlacement="outside"
-        placeholder="Search..."
-        isClearable
-        onClear={() => setSearch("")}
-        startContent={
-          <div>
-            {isFetching ? (
-              <Icons.Refresh className="animate-spin" />
-            ) : (
-              <Icons.Search />
-            )}
-          </div>
-        }
+        label="Search"
+        description="Distributed Hash Table (DHT) network · BT4G"
         type="search"
-        onChange={(e) => setSearch(e.target.value.trim())}
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        classNames={{
+          input: "focus:outline-none focus:ring-0"
+        }}
       />
     </form>
   );
@@ -227,14 +219,21 @@ const SortBySelect = () => {
   );
 };
 function Component() {
+  const { q } = Route.useSearch();
+
   return (
-    <div className="grid grid-rows-[auto_auto_1fr] gap-4 size-full">
+    <div className="grid grid-rows-[auto_1fr_auto] gap-4 size-full">
       <div className="flex gap-4 px-2 w-full md:w-1/2 mx-auto">
         <SearchInput />
         <CategorySelect />
         <SortBySelect />
       </div>
       <BtSearchList />
+      {!q && (
+        <div className="flex justify-center px-4 pb-4 mt-auto">
+          <RealDebridAccountInfo />
+        </div>
+      )}
     </div>
   );
 }

@@ -14,7 +14,6 @@ import {
 } from "@heroui/react";
 import { useDebridStore, useSelectModalStore } from "@/ui/utils/store";
 import { Icons } from "@/ui/utils/icons";
-import { scrollClasses } from "@/ui/utils/classes";
 import { ListBox, ListBoxItem } from "react-aria-components";
 import clsx from "clsx";
 import { useShallow } from "zustand/shallow";
@@ -150,7 +149,7 @@ export function TorrentList({ items, selectedIds, setSelectedIds, selectMode }: 
     <>
       {open && <TorrentDropdown />}
       <ListBox
-        className={clsx("overflow-auto size-full gap-4 p-2 flex flex-col", scrollClasses)}
+        className="overflow-auto size-full gap-4 p-2 flex flex-col"
         items={items}
         selectionMode={selectMode ? "multiple" : "single"}
         selectionBehavior="toggle"
@@ -197,29 +196,32 @@ export function TorrentList({ items, selectedIds, setSelectedIds, selectMode }: 
                         )}
                       </div>
                     </div>
-                    {selectMode ? (
-                      <Checkbox
-                        isSelected={isSelected}
-                        isReadOnly
-                        size="lg"
-                        classNames={{
-                          base: "m-0",
-                          wrapper: "before:rounded-full after:rounded-full mr-0",
-                        }}
-                        icon={<Icons.CheckCircle />}
-                      />
-                    ) : (
-                      <Button
-                        disableRipple
-                        variant="light"
-                        title={"Options"}
-                        isIconOnly
-                        onClick={(e) => onDropDownOpen(e, item)}
-                        className="data-[hover=true]:bg-transparent"
-                      >
-                        <Icons.Dots />
-                      </Button>
-                    )}
+                    <Checkbox
+                      isSelected={isSelected}
+                      size="lg"
+                      classNames={{
+                        base: "m-0",
+                        wrapper: "before:rounded-full after:rounded-full mr-0",
+                      }}
+                      icon={<Icons.CheckCircle />}
+                      onChange={() => {
+                        if (isSelected) {
+                          setSelectedIds(prev => prev.filter(id => id !== item.id));
+                        } else {
+                          setSelectedIds(prev => [...prev, item.id]);
+                        }
+                      }}
+                    />
+                    <Button
+                      disableRipple
+                      variant="light"
+                      title={"Options"}
+                      isIconOnly
+                      onClick={(e) => onDropDownOpen(e, item)}
+                      className="data-[hover=true]:bg-transparent"
+                    >
+                      <Icons.Dots />
+                    </Button>
                   </div>
 
                   <div className="items-center flex col-start-1 col-span-3 sm:col-span-4">

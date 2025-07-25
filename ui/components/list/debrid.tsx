@@ -21,7 +21,6 @@ import { useQueries, useSuspenseQuery } from "@tanstack/react-query";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useSelectModalStore } from "@/ui/utils/store";
 import { Icons } from "@/ui/utils/icons";
-import { paginationItemClass } from "@/ui/utils/classes";
 import { getQueryClient } from "@/ui/utils/queryClient";
 import type { Selection } from "@heroui/react";
 import { DowloadList } from "./download";
@@ -307,7 +306,7 @@ export default function DebridList() {
     [params.type]
   );
 
-  const [selectMode, setSelectMode] = useState(false);
+  const selectMode = true; // Always enable selection
 
   const [selectedIds, setSelectedIds] = useState<Selection>(new Set());
 
@@ -331,7 +330,6 @@ export default function DebridList() {
 
   useEffect(() => {
     setSelectedIds(new Set());
-    setSelectMode(false);
   }, [params.type, params.page]);
 
   const deleteMutation = useDeleteDebrid(params.type, ids, postLastPageDelete);
@@ -345,59 +343,36 @@ export default function DebridList() {
       <div className="flex flex-wrap gap-3 px-2">
         {totalPages > 1 && (
           <Pagination
-            isCompact
             showControls
-            showShadow
-            color="primary"
             page={params.page}
             total={totalPages}
             onChange={handlePageChange}
-            classNames={{
-              item: paginationItemClass,
-              prev: paginationItemClass,
-              next: paginationItemClass,
-            }}
           />
         )}
 
         <Button
-          title="Select Mode"
-          variant="flat"
-          className="bg-white/5"
-          isIconOnly
-          onPress={() =>
-            setSelectMode((prev) => {
-              setSelectedIds(new Set());
-              return !prev;
-            })
-          }
-        >
-          <Icons.SelectMode />
-        </Button>
-        <Button
           title="Select All"
           variant="flat"
-          className="bg-white/5"
-          isIconOnly
-          isDisabled={!selectMode}
           onPress={() =>
             setSelectedIds((prev) => {
               if (prev === "all") return new Set();
               return "all";
             })
           }
+          className="flex items-center gap-2"
         >
           <Icons.SelectAll />
+          <span className="hidden md:inline">Select All</span>
         </Button>
         <Button
           isLoading={deleteMutation.isPending}
           title="Delete"
           variant="flat"
-          className="bg-white/5"
-          isIconOnly
           onPress={onBulkDelete}
+          className="flex items-center gap-2"
         >
           <Icons.Delete />
+          <span className="hidden md:inline">Delete</span>
         </Button>
       </div>
     );
@@ -406,7 +381,6 @@ export default function DebridList() {
     totalPages,
     params.type,
     deleteMutation.isPending,
-    selectMode,
   ]);
 
   const List = params.type === "downloads" ? DowloadList : TorrentList;

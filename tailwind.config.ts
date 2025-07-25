@@ -9,32 +9,8 @@ export default {
   ],
   theme: {
     extend: {
-      fontFamily: {
-        sans: [
-          "Rubik",
-          "system-ui",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          '"Segoe UI"',
-          "Roboto",
-          '"Helvetica Neue"',
-          "Arial",
-          '"Noto Sans"',
-          "sans-serif",
-          '"Apple Color Emoji"',
-          '"Segoe UI Emoji"',
-          '"Segoe UI Symbol"',
-          '"Noto Color Emoji"',
-        ],
-      },
       screens: {
         xs: "475px",
-      },
-      backgroundImage: {
-        radial:
-          "radial-gradient(at 50% -10%, hsl(183.06deg 43.75% 43.92% / 22%) 5%, hsl(0deg 0% 0% / 45%) 90%)",
-        "radial-1":
-          "radial-gradient(at 90% 0%,hsl(183.32deg 43.65% 44.06% / 24%) 5%,hsl(0deg 0% 0% / 0%) 90%)",
       },
     },
     container: {
@@ -47,17 +23,6 @@ export default {
     },
   },
   plugins: [
-    heroui({
-      addCommonColors: true,
-      defaultTheme: "dark",
-      defaultExtendTheme: "dark",
-      themes: {
-        dark: {
-          colors: {
-            primary: "#31797da3",
-          },
-        },
-      },
-    }),
+    heroui(),
   ],
 } satisfies Config;

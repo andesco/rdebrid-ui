@@ -35,4 +35,8 @@ router.get("/cors", async (c, next) => {
   return new Response(res.body, res);
 });
 
+router.get("/health", async (c) => {
+  return c.json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
 export default router;

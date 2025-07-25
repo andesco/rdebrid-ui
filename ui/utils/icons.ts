@@ -33,6 +33,9 @@ import MingcuteSearchLine from "~icons/mingcute/search-line";
 import MingcuteSearchFill from "~icons/mingcute/search-fill";
 import TablerDotsVertical from "~icons/tabler/dots-vertical";
 import TablerDots from "~icons/tabler/dots";
+import TablerBrandGithub from "~icons/tabler/brand-github";
+import TablerSun from "~icons/tabler/sun";
+import TablerMoon from "~icons/tabler/moon";
 import TablerCategory from "~icons/tabler/category";
 import IcRoundSort from "~icons/ic/round-sort";
 import IcRoundRefresh from "~icons/ic/round-refresh";
@@ -77,6 +80,9 @@ export const Icons = {
   SearchFilled: MingcuteSearchFill,
   DotsVertical: TablerDotsVertical,
   Dots: TablerDots,
+  Github: TablerBrandGithub,
+  Sun: TablerSun,
+  Moon: TablerMoon,
   Catergory: TablerCategory,
   Sort: IcRoundSort,
   Refresh: IcRoundRefresh,

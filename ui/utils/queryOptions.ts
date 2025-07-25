@@ -2,6 +2,7 @@ import type {
   BtSearchResponse,
   DebridTorrent,
   DebridUnlock,
+  DebridUser,
   TorrentAvaliability,
   TorrentAvaliabilityResponse,
 } from "@/types";
@@ -66,6 +67,16 @@ export const debridAvailabilityOptions = (magnet: string, enabled = false) =>
     queryKey: ["torrent", "availability", magnet],
     queryFn: async ({ signal }) => getTorrentAvaliability(magnet, signal),
     enabled,
+  });
+
+export const debridUserQueryOptions = () =>
+  queryOptions({
+    queryKey: ["debrid", "user"],
+    queryFn: async ({ signal }) => {
+      const res = await http.get<DebridUser>("/debrid/user", { signal });
+      return res.data;
+    },
+    retry: false,
   });
 
 export const debridUnrestrictLinkOptions = (link: string, enabled = false) =>

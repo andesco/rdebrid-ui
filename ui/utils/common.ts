@@ -49,5 +49,4 @@ export const size2round = partial({ standard: "jedec" });
 
 export const magnetRegex = /^magnet:\?xt=urn:btih:([0-9a-fA-F]{40,}).*$/;
 
-export const defaultUnlockLinkAvatar =
-  "https://fcdn.real-debrid.com/0830/images/hosters/realdebrid.png";
+export const defaultUnlockLinkAvatar = "/real-debrid.png";

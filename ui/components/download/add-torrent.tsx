@@ -10,7 +10,6 @@ import {
 import { useSelectModalStore } from "@/ui/utils/store";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "feaxios";
-import { buttonClasses } from "@/ui/utils/classes";
 import { Icons } from "@/ui/utils/icons";
 import { decodeTorrentFile, toMagnetURI } from "@/ui/utils/parse-torrent";
 
@@ -36,6 +35,11 @@ export const AddTorrent = () => {
   const magnet = useWatch({
     control,
     name: "magnet",
+  });
+
+  const torrentPath = useWatch({
+    control,
+    name: "torrentPath",
   });
 
   const { data, isFetched, isLoading, isRefetching, refetch } = useQuery(
@@ -98,71 +102,50 @@ export const AddTorrent = () => {
         onChange={onTorrentChange}
       />
       <div className="flex flex-col gap-6">
-        <Controller
-          name="torrentPath"
-          control={control}
-          render={({ field, fieldState: { error } }) => (
-            <Input
-              aria-label="Upload Torrent"
-              variant="bordered"
-              isReadOnly
-              labelPlacement="outside"
-              autoComplete="off"
-              {...field}
-              isInvalid={!!error}
-              errorMessage={error?.message}
-              endContent={
-                <div className="flex gap-3">
-                  <Icons.Upload
-                    className="cursor-pointer text-2xl"
-                    onClick={() => inputRef.current?.click()}
-                  />
-                </div>
-              }
-              placeholder="Upload torrent"
+        <Input
+          label="Upload Torrent"
+          value={torrentPath}
+          readOnly
+          onClick={() => inputRef.current?.click()}
+          endContent={
+            <Icons.Upload
+              className="cursor-pointer text-xl"
+              onClick={() => inputRef.current?.click()}
             />
-          )}
-        />
-        <Controller
-          name="magnet"
-          control={control}
-          rules={{
-            required: true,
-            validate: (value) =>
-              magnetRegex.test(value) || "Invalid magnet link",
+          }
+          classNames={{
+            base: "cursor-pointer",
+            input: "focus:outline-none focus:ring-0 cursor-pointer",
+            inputWrapper: "cursor-pointer"
           }}
-          render={({ field, fieldState: { error } }) => (
-            <Input
-              aria-label="Add link or magnet"
-              {...field}
-              isInvalid={!!error}
-              isClearable
-              onClear={() => setValue("magnet", "")}
-              errorMessage={error?.message}
-              autoComplete="off"
-              variant="bordered"
-              labelPlacement="outside"
-              placeholder="Enter magnet link"
-            />
-          )}
+        />
+        <Input
+          label="Magnet Link"
+          value={magnet}
+          onChange={(e) => setValue("magnet", e.target.value)}
+          classNames={{
+            input: "focus:outline-none focus:ring-0"
+          }}
         />
       </div>
       <div className="flex items-center gap-4">
         <Button
           type="submit"
           isLoading={isSubmitting}
-          className={buttonClasses}
+          color="primary"
+          variant="solid"
         >
           Add Torrent
         </Button>
         <Button
           onPress={() => refetch()}
           isDisabled={!magnet}
-          className={buttonClasses}
+          color="primary"
+          variant="solid"
           isLoading={isLoading || isRefetching}
           startContent={
             !(isLoading || isRefetching) ? (
-              <Icons.TorrentFilled className="size-[20px]" />
+              <Icons.TorrentOutline className="size-[20px]" />
             ) : null
           }
         >
