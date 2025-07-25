@@ -1,10 +1,17 @@
 name = "rdebrid-worker"
-main = "functions/api/[[route]].ts"
-compatibility_date = "2024-01-01"
+main = "server/app.ts"
+compatibility_date = "2024-07-01"
+compatibility_flags = ["nodejs_compat"]
 account_id = "0a15c5f9d39350baa992ff9f48efc1c8"
+workers_dev = false
 
 [site]
 bucket = "build/client"
+
+[[routes]]
+pattern = "rdebrid.andrewe.dev"
+custom_domain = true
+
 
 # All secrets are set via wrangler secret put command:
 # wrangler secret put USERNAME

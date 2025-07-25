@@ -32,79 +32,117 @@ app.use("/api/*", (c, next) => {
 
 app.route("/api", IndexRouter);
 
-// Serve static files
+// Serve static files using KV
 app.get("*", async (c) => {
   try {
-    const kvKeys = await c.env.__STATIC_CONTENT.list({ limit: 50 });
-    
     if (c.req.path === "/debug") {
+      const kvKeys = c.env.__STATIC_CONTENT ? await c.env.__STATIC_CONTENT.list({ limit: 20 }) : null;
       return c.json({
         path: c.req.path,
-        kvKeys: kvKeys.keys.map(k => k.name),
-        totalKvKeys: kvKeys.keys.length,
         authMode: c.env.USERNAME && c.env.PASSWORD ? "basic-auth-enabled" : "no-auth-required",
         hasUsername: !!c.env.USERNAME,
         hasPassword: !!c.env.PASSWORD,
-        hasDebridToken: !!c.env.DEBRID_TOKEN
+        hasDebridToken: !!c.env.DEBRID_TOKEN,
+        hasKV: !!c.env.__STATIC_CONTENT,
+        kvKeys: kvKeys ? kvKeys.keys.map(k => k.name) : []
       });
     }
     
-    // Try to get index.html directly by its hashed name
-    const indexAsset = await c.env.__STATIC_CONTENT.get("index.fd1221fc4e.html", "arrayBuffer");
-    
-    if (c.req.path === "/" && indexAsset) {
-      return new Response(indexAsset, {
-        headers: { "Content-Type": "text/html" }
-      });
+    // Fallback to KV-based static file serving
+    if (!c.env.__STATIC_CONTENT) {
+      return c.text("Static content not available", 500);
     }
     
-    // Handle other asset paths by looking through KV keys
-    if (c.req.path.startsWith("/assets/") || c.req.path.startsWith("/fonts/") || c.req.path === "/favicon.ico") {
-      // Find the hashed version of the requested file
-      const requestedFile = c.req.path.substring(1); // remove leading slash
-      const matchingKey = kvKeys.keys.find(key => {
-        const keyName = key.name;
-        // Match the original filename pattern
-        if (requestedFile.includes("index-B-8WjzM4.js")) return keyName.includes("index-B-8WjzM4");
-        if (requestedFile.includes("index-DAIJuZOP.js")) return keyName.includes("index-DAIJuZOP");
-        if (requestedFile.includes("index-Sbz81UDz.css")) return keyName.includes("index-Sbz81UDz");
-        if (requestedFile.includes("watch._-DE511lZx.css")) return keyName.includes("watch._-DE511lZx");
-        if (requestedFile.includes("watch._.lazy-mpnTaOqP.js")) return keyName.includes("watch._.lazy-mpnTaOqP");
-        if (requestedFile === "favicon.ico") return keyName.includes("favicon");
-        if (requestedFile.includes("rubik.woff2")) return keyName.includes("rubik");
-        return false;
-      });
-      
-      if (matchingKey) {
-        const asset = await c.env.__STATIC_CONTENT.get(matchingKey.name, "arrayBuffer");
-        if (asset) {
-          let contentType = "text/plain";
-          if (c.req.path.endsWith(".css")) contentType = "text/css";
-          else if (c.req.path.endsWith(".js")) contentType = "application/javascript";
-          else if (c.req.path.endsWith(".ico")) contentType = "image/x-icon";
-          else if (c.req.path.endsWith(".woff2")) contentType = "font/woff2";
-          
-          const headers = new Headers({ "Content-Type": contentType });
-          if (c.req.path.startsWith("/assets/") || c.req.path.startsWith("/fonts/")) {
-            headers.set("Cache-Control", "public, max-age=31536000");
-          }
-          
-          return new Response(asset, { headers });
+    // Get all KV keys to find the hashed version of requested file
+    const kvKeys = await c.env.__STATIC_CONTENT.list({ limit: 50 });
+    
+    let path = c.req.path;
+    
+    // Handle root path
+    if (path === "/") {
+      path = "/index.html";
+    }
+    
+    // Remove leading slash for key matching
+    const requestedFile = path.substring(1);
+    
+    // Find the hashed version of the requested file
+    let matchingKey = null;
+    
+    // Direct match first
+    matchingKey = kvKeys.keys.find(key => key.name === requestedFile);
+    
+    // If no direct match, try to find by pattern (for hashed files)
+    if (!matchingKey) {
+      if (requestedFile === "index.html") {
+        matchingKey = kvKeys.keys.find(key => key.name.startsWith("index.") && key.name.endsWith(".html"));
+      } else if (requestedFile === "favicon.ico") {
+        matchingKey = kvKeys.keys.find(key => key.name.startsWith("favicon.") && key.name.endsWith(".ico"));
+      } else if (requestedFile.startsWith("assets/")) {
+        const fileName = requestedFile.split("/").pop();
+        const baseName = fileName?.split(".")[0];
+        const extension = fileName?.split(".").pop();
+        if (baseName && extension) {
+          matchingKey = kvKeys.keys.find(key => 
+            key.name.startsWith(`assets/${baseName}.`) && key.name.endsWith(`.${extension}`)
+          );
+        }
+      } else if (requestedFile.startsWith("fonts/")) {
+        const fileName = requestedFile.split("/").pop();
+        const baseName = fileName?.split(".")[0];
+        const extension = fileName?.split(".").pop();
+        if (baseName && extension) {
+          matchingKey = kvKeys.keys.find(key => 
+            key.name.startsWith(`fonts/${baseName}.`) && key.name.endsWith(`.${extension}`)
+          );
         }
       }
     }
     
-    // SPA fallback - serve index.html for all other non-API routes
-    if (!c.req.path.startsWith("/api") && indexAsset) {
-      return new Response(indexAsset, {
-        headers: { "Content-Type": "text/html" }
-      });
+    if (matchingKey) {
+      const file = await c.env.__STATIC_CONTENT.get(matchingKey.name, { type: "arrayBuffer" });
+      
+      if (file) {
+        // Determine content type
+        let contentType = "text/plain";
+        if (path.endsWith(".html")) contentType = "text/html";
+        else if (path.endsWith(".css")) contentType = "text/css";
+        else if (path.endsWith(".js")) contentType = "application/javascript";
+        else if (path.endsWith(".json")) contentType = "application/json";
+        else if (path.endsWith(".ico")) contentType = "image/x-icon";
+        else if (path.endsWith(".woff2")) contentType = "font/woff2";
+        else if (path.endsWith(".svg")) contentType = "image/svg+xml";
+        else if (path.endsWith(".png")) contentType = "image/png";
+        else if (path.endsWith(".jpg") || path.endsWith(".jpeg")) contentType = "image/jpeg";
+        
+        const headers = new Headers({ "Content-Type": contentType });
+        
+        // Add caching headers for assets
+        if (path.startsWith("/assets/") || path.startsWith("/fonts/")) {
+          headers.set("Cache-Control", "public, max-age=31536000");
+        }
+        
+        return new Response(file, { headers });
+      }
+    }
+    
+    // SPA fallback - serve index.html for non-API routes
+    if (!path.startsWith("/api")) {
+      const indexKey = kvKeys.keys.find(key => key.name.startsWith("index.") && key.name.endsWith(".html"));
+      if (indexKey) {
+        const indexFile = await c.env.__STATIC_CONTENT.get(indexKey.name, { type: "arrayBuffer" });
+        if (indexFile) {
+          return new Response(indexFile, {
+            headers: { "Content-Type": "text/html" }
+          });
+        }
+      }
     }
     
     return c.text("Not Found", 404);
   } catch (error) {
     console.error("Static file serving error:", error);
-    return c.text("Static file error: " + error.message, 500);
+    return c.text("Static file error: " + (error instanceof Error ? error.message : String(error)), 500);
   }
 });
 
