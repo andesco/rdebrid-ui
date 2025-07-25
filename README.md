@@ -27,6 +27,9 @@ rdebrid is a Cloudflare Worker that servers a modern interface for Real Debrid.
 
 ### Deploy using Command Line
 
+> [!NOTE]
+> Pre-built client assets are included in `build/client/` - no build step required for deployment.
+
 1. Fork and clone this repository:\
 ```gh repo fork andesco/rdebrid-worker --clone```
 2. Install dependencies: `npm install`
@@ -39,6 +42,21 @@ rdebrid is a Cloudflare Worker that servers a modern interface for Real Debrid.
    ```
 5. Deploy: `wrangler deploy`
 
+### Development (Building UI)
+
+If you want to modify the UI and rebuild client assets:
+
+1. Switch to development package.json: `mv package.json package.deploy.json && mv package.dev.json package.json`
+2. Install UI dependencies: `npm install`
+3. Uncomment the build section in `wrangler.toml`:
+   ```toml
+   [build]
+   command = "npm run build:client"
+   ```
+4. Build client assets: `npm run build:client`
+5. Switch back to deployment package.json: `mv package.json package.dev.json && mv package.deploy.json package.json`
+6. Deploy: `wrangler deploy`
+
 ## Environment Variables
 
 The application requires the following environment variables:
@@ -46,10 +64,9 @@ The application requires the following environment variables:
 | Variable                   | Description                                                |
 |----------------------------|------------------------------------------------------------|
 | `DEBRID_TOKEN`             | **required:** [API Private Token](https://real-debrid.com/devices#:~:text=API%20token)  |
-| `USERNAME`                 | Basic auth username (optional, enables basic auth when set with PASSWORD) |
-| `PASSWORD`                 | Basic auth password (optional, enables basic auth when set with USERNAME) |
-| `FORWARD_IP`               | Override IP address forwarded to Real Debrid API (optional, falls back to CF-Connecting-IP header) |
-| `PROXY_URL`                | Proxy URL for BT search requests (optional) |
+| `USERNAME` & `PASSWORD`    | optional: enable [basic authentication](https://en.wikipedia.org/wiki/Basic_access_authentication) |
+| `FORWARD_IP`               | override IP address forwarded to Real Debrid API (falls back to `CF-Connecting-IP` header) |
+| `PROXY_URL`                | optional: proxy URL for search requests |
 
 
 

@@ -11,7 +11,7 @@ node_modules
 coverage
 
 out/
-build
+# build - commented out to include pre-built client assets
 
 # misc
 .DS_Store

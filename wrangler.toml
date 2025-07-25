@@ -5,8 +5,9 @@ compatibility_flags = ["nodejs_compat"]
 account_id = "0a15c5f9d39350baa992ff9f48efc1c8"
 workers_dev = false
 
-[build]
-command = "npm run build:client"
+# [build]
+# command = "npm run build:client"
+# Uncomment above for development builds
 
 [site]
 bucket = "build/client"
