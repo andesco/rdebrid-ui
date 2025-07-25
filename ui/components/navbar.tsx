@@ -40,7 +40,7 @@ export const AppNavbar = () => {
           <li>
             <Button
               as="a"
-              href="https://github.com/andesco/rdebrid-ui"
+              href="https://github.com/andesco/rdebrid-worker"
               target="_blank"
               rel="noopener noreferrer"
               variant="light"

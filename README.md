@@ -1,88 +1,58 @@
-# Real-Debrid Modern UI
+# rdebrid-worker
 
- Real-Debrid Modern UI! This project provides a modern interface for Real-Debrid with new features such as bulk delete,availability checking and many more.
+rdebrid is a Cloudflare Worker that servers a modern interface for Real Debrid.
 
 ## Features
 
-- **Modern Interface**: A clean and modern interface for Real-Debrid.
-- SPA (Single Page Application): The app is a single page application, which means it's fast and responsive.
-- **Bulk Delete**: Easily delete multiple items at once.
-- **Torrent Availability Checking**: Check the availability of magnet before adding torrent.
-- Search torrent from `BTdig` index.
-- **Tor2Magnet**: Convert Torrent files to Magnet no need of any external tool.
-- Mobile Friendly UI
+- clean and modern interface for Real Debrid using HeroUI
+- fast and responsive web app
+- basic library managment
+- search torrent using `BT4G` API
+- convert torrent files to magnet links using `Tor2Magnet`
+- mobile UI
 
-![demo](./demos/demo1.jpg)
-
-<details>
-<summary><b>More Images</b></summary>
-
-![demo2](./demos/demo2.jpg)
-![demo3](./demos/demo4.jpg)
-
-</details>
-
-## Prerequisites
-
-Ensure you have the following installed on your system:
-- [Docker](https://www.docker.com/get-started)
 
 ## Getting Started
 
-### Deploy With Docker
+### Deploy to Cloudflare Workers
 
-Use docker-compose to run the application.Change the environment variables in the docker-compose file.
+[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/andesco/rdebrid-worker)
 
-```yml
-services:
-  realdebrid:
-    image: ghcr.io/tgdrive/rdebrid-ui
-    container_name: realdebrid
-    ports:
-    - 8080:8080
-    environment:
-      - AUTH_SECRET=""
-      - AUTH_URL=""
-      - AUTH_REAL_DEBRID_ID=""
-      - AUTH_REAL_DEBRID_SECRET=""
-    restart: always
-    
-```
+1. [Deploy to Cloudflare](https://deploy.workers.cloudflare.com/?url=https://github.com/andesco/rdebrid-worker)
+2. select: Create and deploy, Continue to project…
+3. Workers & Pages › rdebrid-worker › Settings › Variables and Secrets › Add: \
+`DEBRID_TOKEN`: your Real Debrid [API Private Token](https://real-debrid.com/devices#:~:text=API%20token)\
+`USERNAME` & `PASSWORD`: enable [basic authentication](https://en.wikipedia.org/wiki/Basic_access_authentication)
+4. Optional: Add `rdebrid-worker` to [Cloudflare Access](https://one.dash.cloudflare.com/) as a self-hosted app
 
-### Deploy With Cloudflare Pages
-- Fork this repository.
-- Create a new Cloudflare Pages project and connect it to your forked repository.
-- Add `pnpm build:client` as the build command.
-- Add `build/client` in Build output.
-- Add Environment Variables in the Cloudflare Pages settings.
-- Deploy the project.
+### Deploy using Command Line
 
-**Note*:*
-- `AUTH_REAL_DEBRID_ID` and `AUTH_REAL_DEBRID_SECRET` are required for Real-Debrid authentication. It will be generated through UI when you login first time make sure you copy those and use it here.Its a one time process.
-- For `AUTH_URL` make sure to add `/api/auth` at the end. For example app is deployed on `https://example.com` it will be `https://example.com/api/auth`
+1. Fork and clone this repository:\
+```gh repo fork andesco/rdebrid-worker --clone```
+2. Install dependencies: `npm install`
+3. Configure `wrangler.toml` with your account ID and custom domain
+4. Set environment variables using wrangler secrets:
+   ```bash
+   wrangler secret put DEBRID_TOKEN
+   wrangler secret put USERNAME
+   wrangler secret put PASSWORD
+   ```
+5. Deploy: `wrangler deploy`
+
 ## Environment Variables
 
 The application requires the following environment variables:
 
 | Variable                   | Description                                                |
 |----------------------------|------------------------------------------------------------|
-| `AUTH_SECRET`              | The secret key used for JWT authentication.                    |
-| `AUTH_URL`                 | The Hosted URL of service.                     |
-| `AUTH_REAL_DEBRID_ID`     | OAUTH ID for Real-Debrid authentication.                |
-| `AUTH_REAL_DEBRID_SECRET`  | OAUTH SECRET for Real-Debrid authentication.   
-| `FORWARD_IP`  | Forward Debrid IP.
-| `DEBRID_TOKEN`  | Use Personal Debrid Token instead of Oauth Token which has limited scopes permissions .
-| `PORT`  | Change Default 8080 Server Port.
-| `PROXY_URL`  | Use proxy for `BTdig` indexer if its blocked in your region(only works on docker and local deployment).
+| `DEBRID_TOKEN`             | **required:** [API Private Token](https://real-debrid.com/devices#:~:text=API%20token)  |
+| `USERNAME`                 | Basic auth username (optional, enables basic auth when set with PASSWORD) |
+| `PASSWORD`                 | Basic auth password (optional, enables basic auth when set with USERNAME) |
+| `FORWARD_IP`               | Override IP address forwarded to Real Debrid API (optional, falls back to CF-Connecting-IP header) |
+| `PROXY_URL`                | Proxy URL for BT search requests (optional) |
 
-**You can generate `AUTH_SECRET` from [here](https://generate-secret.vercel.app/64).**
 
-**Note**: You must enter registered real debrid IP  in  `FORWARD_IP` if you are deploying app remotely.Registered IP can be found in Real-Debrid account settings.It's not needed when you are using app behind cloudflare dns or using cloudflare services like pages and workers , IP will be taken from `CF-Connecting-IP` header and forwarded to debrid api.
 
-## Contributing
+> [!NOTE]
+> When deploying on Cloudflare Workers, the IP will be automatically taken from `CF-Connecting-IP` header and forwarded to real-debrid.com api.
 
-Feel free to contribute to this project if you have any further ideas.
-
-## Donate
-
-If you like this project small contribution would be appreciated [Paypal](https://paypal.me/redux234).
