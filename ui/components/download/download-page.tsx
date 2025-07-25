@@ -1,5 +1,5 @@
 import type { DebridUnlock, DownloadTab } from "@/types";
-import { Avatar, Button, Tab, Tabs, Tooltip } from "@nextui-org/react";
+import { Avatar, Button, Tab, Tabs, Tooltip } from "@heroui/react";
 import { getRouteApi, Outlet } from "@tanstack/react-router";
 import clsx from "clsx";
 import { useDebridStore } from "@/ui/utils/store";

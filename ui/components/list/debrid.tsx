@@ -16,14 +16,14 @@ import {
   ModalFooter,
   ModalHeader,
   Pagination,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useQueries, useSuspenseQuery } from "@tanstack/react-query";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useSelectModalStore } from "@/ui/utils/store";
 import { Icons } from "@/ui/utils/icons";
 import { paginationItemClass } from "@/ui/utils/classes";
 import { getQueryClient } from "@/ui/utils/queryClient";
-import type { Selection } from "@nextui-org/react";
+import type { Selection } from "@heroui/react";
 import { DowloadList } from "./download";
 import { TorrentList } from "./torrent";
 import { DebridFileTree } from "../file-tree";

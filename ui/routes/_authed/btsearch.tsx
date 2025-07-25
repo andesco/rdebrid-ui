@@ -7,9 +7,9 @@ import {
   DropdownMenu,
   DropdownTrigger,
   Input,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { Icons } from "@/ui/utils/icons";
-import type { Selection } from "@nextui-org/react";
+import type { Selection } from "@heroui/react";
 import { BtSearchList } from "@/ui/components/list/btsearch";
 import { btSearchItemsQueryOptions } from "@/ui/utils/queryOptions";
 import { valibotSearchValidator } from "@tanstack/router-valibot-adapter";

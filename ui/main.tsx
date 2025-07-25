@@ -1,7 +1,7 @@
 import * as React from "react";
 import { TailwindIndicator } from "@/ui/components/tailwind-indicator";
 import { getQueryClient } from "@/ui/utils/queryClient";
-import { NextUIProvider } from "@nextui-org/react";
+import { HeroUIProvider } from "@heroui/react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
@@ -35,7 +35,7 @@ if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <QueryClientProvider client={getQueryClient()}>
-      <NextUIProvider>
+      <HeroUIProvider>
         <Toaster
           position="bottom-right"
           toastOptions={{
@@ -50,7 +50,7 @@ if (!rootElement.innerHTML) {
         />
         <RouterProvider router={router} />
         <TailwindIndicator />
-      </NextUIProvider>
+      </HeroUIProvider>
       <ReactQueryDevtools buttonPosition="bottom-left" />
     </QueryClientProvider>,
   );

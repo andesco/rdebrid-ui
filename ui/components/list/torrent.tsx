@@ -11,14 +11,14 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useDebridStore, useSelectModalStore } from "@/ui/utils/store";
 import { Icons } from "@/ui/utils/icons";
 import { scrollClasses } from "@/ui/utils/classes";
 import { ListBox, ListBoxItem } from "react-aria-components";
 import clsx from "clsx";
 import { useShallow } from "zustand/shallow";
-import type { Selection } from "@nextui-org/react";
+import type { Selection } from "@heroui/react";
 import toast from "react-hot-toast";
 import { useNavigate } from "@tanstack/react-router";
 

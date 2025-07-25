@@ -2,7 +2,7 @@ import type React from "react";
 import { useState, memo, useCallback } from "react";
 
 import { motion } from "framer-motion";
-import { Button, Checkbox } from "@nextui-org/react";
+import { Button, Checkbox } from "@heroui/react";
 import type { DebridFileNode, DebridTorrent } from "@/types";
 import { Icons } from "@/ui/utils/icons";
 import { useQuery } from "@tanstack/react-query";

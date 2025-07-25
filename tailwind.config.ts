@@ -1,11 +1,11 @@
-import { nextui } from "@nextui-org/theme";
+import { heroui } from "@heroui/theme";
 import type { Config } from "tailwindcss";
 
 export default {
   content: [
     "./index.html",
     "./ui/**/*.{js,ts,jsx,tsx,mdx}",
-    "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
@@ -47,7 +47,7 @@ export default {
     },
   },
   plugins: [
-    nextui({
+    heroui({
       addCommonColors: true,
       defaultTheme: "dark",
       defaultExtendTheme: "dark",

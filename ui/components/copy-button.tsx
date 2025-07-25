@@ -1,6 +1,6 @@
 import type { FC } from "react";
-import { Button, type ButtonProps } from "@nextui-org/react";
-import { useClipboard } from "@nextui-org/use-clipboard";
+import { Button, type ButtonProps } from "@heroui/react";
+import { useClipboard } from "@heroui/use-clipboard";
 import { Icons } from "@/ui/utils/icons";
 
 export interface CopyButtonProps extends ButtonProps {

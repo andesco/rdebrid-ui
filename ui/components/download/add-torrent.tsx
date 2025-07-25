@@ -1,4 +1,4 @@
-import { Button, Input } from "@nextui-org/react";
+import { Button, Input } from "@heroui/react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useCallback, useRef, useState } from "react";
 import { magnetRegex } from "@/ui/utils/common";

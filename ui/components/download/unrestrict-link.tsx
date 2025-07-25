@@ -1,7 +1,7 @@
 import http from "@/ui/utils/http";
 import { debridTorrentQueryOptions } from "@/ui/utils/queryOptions";
 import { useDebridStore } from "@/ui/utils/store";
-import { Button, Input, Textarea } from "@nextui-org/react";
+import { Button, Input, Textarea } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import { useSearch } from "@tanstack/react-router";
 import { useEffect } from "react";

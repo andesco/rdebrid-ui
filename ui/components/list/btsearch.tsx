@@ -8,7 +8,7 @@ import {
   Listbox,
   ListboxItem,
   Pagination,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import {
   btSearchItemsQueryOptions,
