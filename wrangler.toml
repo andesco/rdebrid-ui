@@ -2,20 +2,14 @@ name = "rdebrid-worker"
 main = "server/app.ts"
 compatibility_date = "2024-07-01"
 compatibility_flags = ["nodejs_compat"]
-account_id = "0a15c5f9d39350baa992ff9f48efc1c8"
-workers_dev = false
-
-# [build]
-# command = "npm run build:client"
-# Uncomment above for development builds
 
 [site]
 bucket = "build/client"
 
-[[routes]]
-pattern = "rdebrid.andrewe.dev"
-custom_domain = true
-
+# Uncomment and configure for custom domain:
+# [[routes]]
+# pattern = "your-domain.com"
+# custom_domain = true
 
 # All secrets are set via wrangler secret put command:
 # wrangler secret put USERNAME

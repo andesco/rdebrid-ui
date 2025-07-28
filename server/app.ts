@@ -44,7 +44,7 @@ app.get("*", async (c) => {
         hasPassword: !!c.env.PASSWORD,
         hasDebridToken: !!c.env.DEBRID_TOKEN,
         hasKV: !!c.env.__STATIC_CONTENT,
-        kvKeys: kvKeys ? kvKeys.keys.map(k => k.name) : []
+        kvKeys: kvKeys ? kvKeys.keys.map((k: any) => k.name) : []
       });
     }
     
@@ -69,22 +69,60 @@ app.get("*", async (c) => {
     // Find the hashed version of the requested file
     let matchingKey = null;
     
+    const findKey = (targetKey: string) => {
+      // Direct match first (production)
+      let match = kvKeys.keys.find((key: any) => key.name === targetKey);
+      
+      // In local dev, check Miniflare keys by decoding them
+      if (!match) {
+        match = kvKeys.keys.find((key: any) => {
+          if (key.name.startsWith('$__MINIFLARE_SITES__$/')) {
+            const miniflareKey = key.name.substring('$__MINIFLARE_SITES__$/'.length);
+            const decodedKey = decodeURIComponent(miniflareKey);
+            return decodedKey === targetKey;
+          }
+          return false;
+        });
+      }
+      
+      return match;
+    };
+    
+    const findKeyByPattern = (pattern: (key: string) => boolean) => {
+      // Direct match first (production)
+      let match = kvKeys.keys.find((key: any) => pattern(key.name));
+      
+      // In local dev, check Miniflare keys by decoding them
+      if (!match) {
+        match = kvKeys.keys.find((key: any) => {
+          if (key.name.startsWith('$__MINIFLARE_SITES__$/')) {
+            const miniflareKey = key.name.substring('$__MINIFLARE_SITES__$/'.length);
+            const decodedKey = decodeURIComponent(miniflareKey);
+            return pattern(decodedKey);
+          }
+          return pattern(key.name);
+        });
+      }
+      
+      return match;
+    };
+    
     // Direct match first
-    matchingKey = kvKeys.keys.find(key => key.name === requestedFile);
+    matchingKey = findKey(requestedFile);
     
     // If no direct match, try to find by pattern (for hashed files)
     if (!matchingKey) {
       if (requestedFile === "index.html") {
-        matchingKey = kvKeys.keys.find(key => key.name.startsWith("index.") && key.name.endsWith(".html"));
+        matchingKey = findKeyByPattern(name => name.startsWith("index.") && name.endsWith(".html"));
       } else if (requestedFile === "favicon.ico") {
-        matchingKey = kvKeys.keys.find(key => key.name.startsWith("favicon.") && key.name.endsWith(".ico"));
+        matchingKey = findKeyByPattern(name => name.startsWith("favicon.") && name.endsWith(".ico"));
       } else if (requestedFile.startsWith("assets/")) {
         const fileName = requestedFile.split("/").pop();
         const baseName = fileName?.split(".")[0];
         const extension = fileName?.split(".").pop();
         if (baseName && extension) {
-          matchingKey = kvKeys.keys.find(key => 
-            key.name.startsWith(`assets/${baseName}.`) && key.name.endsWith(`.${extension}`)
+          matchingKey = findKeyByPattern(name => 
+            name.startsWith(`assets/${baseName}.`) && name.endsWith(`.${extension}`)
           );
         }
       } else if (requestedFile.startsWith("fonts/")) {
@@ -92,8 +130,8 @@ app.get("*", async (c) => {
         const baseName = fileName?.split(".")[0];
         const extension = fileName?.split(".").pop();
         if (baseName && extension) {
-          matchingKey = kvKeys.keys.find(key => 
-            key.name.startsWith(`fonts/${baseName}.`) && key.name.endsWith(`.${extension}`)
+          matchingKey = findKeyByPattern(name => 
+            name.startsWith(`fonts/${baseName}.`) && name.endsWith(`.${extension}`)
           );
         }
       }
@@ -128,7 +166,7 @@ app.get("*", async (c) => {
     
     // SPA fallback - serve index.html for non-API routes
     if (!path.startsWith("/api")) {
-      const indexKey = kvKeys.keys.find(key => key.name.startsWith("index.") && key.name.endsWith(".html"));
+      const indexKey = findKeyByPattern(name => name.startsWith("index.") && name.endsWith(".html"));
       if (indexKey) {
         const indexFile = await c.env.__STATIC_CONTENT.get(indexKey.name, { type: "arrayBuffer" });
         if (indexFile) {

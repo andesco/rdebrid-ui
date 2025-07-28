@@ -3,8 +3,14 @@
   "version": "0.0.2",
   "private": true,
   "scripts": {
+    "dev": "npm run _dev-setup && npm run build:client && wrangler dev",
+    "dev:ui": "npm run _dev-setup && vite",
+    "dev:watch": "npm run _dev-setup && vite build --watch",
+    "server": "wrangler dev",
+    "typecheck": "npm run _dev-setup && tsc --noEmit",
+    "build:client": "npm run _dev-setup && vite build",
     "deploy": "wrangler deploy",
-    "dev:worker": "wrangler dev"
+    "_dev-setup": "[ -d node_modules/@vitejs ] || (echo '📦 Installing UI dependencies...' && mv package.json package.json.bak && cp package.dev.json package.json && npm install && mv package.json.bak package.json)"
   },
   "dependencies": {
     "bencode": "^4.0.0",
@@ -15,6 +21,7 @@
     "p-limit": "^6.1.0",
     "uint8-util": "^2.2.5",
     "valibot": "1.0.0-beta.3",
+    "wrangler": "^3.96.0",
     "zod": "^3.23.8"
   }
 }

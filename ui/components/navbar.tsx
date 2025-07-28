@@ -46,6 +46,7 @@ export const AppNavbar = () => {
               variant="light"
               isIconOnly
               aria-label="GitHub"
+              className="text-default-600 hover:text-primary"
             >
               <Icons.Github />
             </Button>
@@ -56,6 +57,7 @@ export const AppNavbar = () => {
               variant="light"
               isIconOnly
               aria-label="Toggle theme"
+              className="text-default-600 hover:text-primary"
             >
               {isDark ? <Icons.Sun /> : <Icons.Moon />}
             </Button>

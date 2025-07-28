@@ -3,14 +3,18 @@
   "version": "0.0.2",
   "private": true,
   "scripts": {
+    "dev": "npm run build:client && wrangler dev",
+    "dev:ui": "vite",
+    "dev:worker": "wrangler dev",
+    "dev:watch": "vite build --watch",
+    "server": "wrangler dev",
     "client": "vite",
-    "server": "bun --watch server/index.ts",
+    "server:bun": "bun --watch server/index.ts",
     "typecheck": "tsc --noEmit",
     "build:client": "vite build",
     "build:server": "vite build -c vite.server.config.mts",
     "update": "pnpm up --latest",
-    "deploy": "wrangler deploy",
-    "dev:worker": "wrangler dev"
+    "deploy": "wrangler deploy"
   },
   "dependencies": {
     "bencode": "^4.0.0",
@@ -21,6 +25,7 @@
     "p-limit": "^6.1.0",
     "uint8-util": "^2.2.5",
     "valibot": "1.0.0-beta.3",
+    "wrangler": "^3.96.0",
     "zod": "^3.23.8"
   },
   "optionalDependencies": {
